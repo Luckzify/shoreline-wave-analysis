@@ -30,7 +30,6 @@ imwrite(tempCrop, "Crop.png")
 white = edge(createMask(imgaussfilt(imcrop(videoFReader(), [500,600,1100,275]),3)), 'canny');
 
 row = nan(1,size(white,2));
-blank = nan(1,size(white,2));
 [heightIMG,widthIMG] = size(white);
 
 line = zeros(heightIMG, widthIMG);
@@ -48,16 +47,7 @@ for j = 1:widthIMG;
         end
     end
 end
-%pseduo code for sliding window
-% a = a + abs(pixel1 - pixel2)
-% AVGDividend = AVGDividend + 1
-AVGDividend = 0
-for l = 1:widthIMG-3
-    AVGDividend = AVGDividend + abs(ls(l) - ls(l+1));
-end
-AveragePixelChange = AVGDividend / (widthIMG - 3)
-%disp(widthIMG)
-%disp(ls)
+
 F=sparse(line);
 createFit(js, ls)
 
