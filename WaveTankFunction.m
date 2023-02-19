@@ -84,7 +84,7 @@ end
   withHighest = insertShape(test, 'circle', [corX lowY 5], 'LineWidth', 10);
   video = insertShape(withHighest,'line', [0 calmLvl widthIMG+1 calmLvl], 'LineWidth', 2, 'Color', 'red');
   
-  %% videoPlayer(video);
+  videoPlayer(video);
   
 
 
@@ -92,6 +92,9 @@ end
 
  %writeVideo(outVideo,imread(frameNum + ".png"));
 frameNum = frameNum+1
+if frameNum == 5
+    return
+end
 
 
 %% IMPORTANT
