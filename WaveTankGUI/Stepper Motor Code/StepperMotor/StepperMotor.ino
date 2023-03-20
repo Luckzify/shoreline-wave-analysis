@@ -1,5 +1,4 @@
 #include <AccelStepper.h>
-#include <stdbool.h>
 
 #define DEG_PER_STEP 1.8
 #define STEP_PER_REVOLUTION (360 / DEG_PER_STEP)
@@ -11,18 +10,20 @@ int value;
 int speed;
 int distance;
 
-bool setSpeed = false;
+bool setSpeed;
 
 void setup() {
   Serial.begin(9600);
 
   stepper.setCurrentPosition(0); 
+
+  // Initial Parameters <- Im so dumb before I put it in loop so it always reset
+  speed = 100;
+  distance = 150;
+  setSpeed = false;
 }
 
 void loop() {
-  // Initial Parameters
-  speed = 100;
-  distance = 150;
 
   // Wave Type Control
   if(Serial.available()>0){
