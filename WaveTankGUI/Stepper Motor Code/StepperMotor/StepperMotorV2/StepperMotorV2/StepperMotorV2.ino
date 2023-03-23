@@ -6,49 +6,29 @@
 AccelStepper stepper(AccelStepper::FULL4WIRE, 7, 6, 5, 4);
 
 long moveToPosition = STEP_PER_REVOLUTION;
-int value;
+int wavetype;
 int speed;
 int distance;
-
-bool setSpeed;
-
 
 void setup() {
   Serial.begin(9600);
 
   stepper.setCurrentPosition(0); 
-
-  // Initial Parameters <- Im so dumb before I put it in loop so it always reset
-  speed = 1000;
-  setSpeed = false;
-  distance = 150;
 }
 
 void loop() {
 
-  // Wave Type Control
+  // Read Wave Type
   if(Serial.available()>0){
-    value=Serial.read();
-
-    /*Stop everything*/
-    if(value == 0){
-      stepper.stop();
-    }
-
-    // /*Set Speed Mode*/
-    // // value of 1: set speed
-    // if(setSpeed){
-    //   speed = value;
-    //   setSpeed = false;
-    // }
-    // if(value == 1){
-    //   setSpeed = true;
-    // }
+    wavetype=Serial.read();
+    speed=Serial.read();
+    distance=Serial.read();
 
 
+    // Run Wave Type
     /*Mono-Pulse Mode*/
-    // value of 3: pulse mode
-    if(value == 3){
+    // value of 1: pulse mode
+    if(wavetype == 1){
       stepper.setMaxSpeed(speed*10);
       stepper.setAcceleration(speed*10);
 
@@ -67,6 +47,15 @@ void loop() {
       stepper.runToPosition(); 
       // Now stopped after quickstop
     }
+  } 
+  // // Read Speed
+  // if(Serial.available()>0){
+  //   speed=Serial.read();
+  // } 
+  // // Read Distance
+  // if(Serial.available()>0){
+  //   distance=Serial.read();
+  // } 
 
     /*Constant Pulse Mode*/
     // 2000+ values are pulse mode
@@ -75,7 +64,7 @@ void loop() {
     // if(value >= 2000){
     // }
 
-  } 
+
   
   // stepper.moveTo(150);
   // while (stepper.currentPosition() != 150) // Full speed up to 300
