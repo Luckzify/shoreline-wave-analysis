@@ -76,20 +76,22 @@ void loop() {
       stepper.setMaxSpeed(speed);
       stepper.setAcceleration(speed);
 
-      stepper.moveTo(distance);
-      while (stepper.currentPosition() != distance) // Full speed up to 300
-        stepper.run();
-      stepper.stop(); // Stop as fast as possible: sets new target
-      stepper.runToPosition(); 
-      // Now stopped after quickstop
-    
-      // Now go backwards
-      stepper.moveTo(0);
-      while (stepper.currentPosition() != 0) // Full speed basck to 0
-        stepper.run();
-      stepper.stop(); // Stop as fast as possible: sets new target
-      stepper.runToPosition(); 
-      // Now stopped after quickstop
+      for (int i = 0; i < 5; i++) {
+        stepper.moveTo(distance);
+        while (stepper.currentPosition() != distance) // Full speed up to 300
+          stepper.run();
+        stepper.stop(); // Stop as fast as possible: sets new target
+        stepper.runToPosition(); 
+        // Now stopped after quickstop
+      
+        // Now go backwards
+        stepper.moveTo(0);
+        while (stepper.currentPosition() != 0) // Full speed basck to 0
+          stepper.run();
+        stepper.stop(); // Stop as fast as possible: sets new target
+        stepper.runToPosition(); 
+        // Now stopped after quickstop
+      }     
     }
 
     // Run Wave Type
@@ -107,8 +109,8 @@ void loop() {
       // Now stopped after quickstop
     
       // Now go backwards
-      stepper.setMaxSpeed(100);
-      stepper.setAcceleration(100);
+      stepper.setMaxSpeed(1000);
+      stepper.setAcceleration(1000);
       stepper.moveTo(0);
       while (stepper.currentPosition() != 0) // Full speed basck to 0
         stepper.run();
