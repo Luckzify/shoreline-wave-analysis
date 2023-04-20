@@ -8,10 +8,6 @@
 
 AccelStepper stepper(AccelStepper::FULL4WIRE, 7, 6, 5, 4);
 
-int value;
-int speed;
-int distance;
-
 SevSeg sevseg; 
 const int steps_per_rev = 200;
 int i = 1;
@@ -39,7 +35,21 @@ void setup(){
   speed = 100;
   distance = 150;
 }
+void moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(int speed,int distance){
+  stepper.setMaxSpeed(speed);
+  stepper.setAcceleration(speed);
 
+  stepper.moveTo(distance);
+  while (stepper.currentPosition() != distance) // Full speed up to 300
+    stepper.run();
+  stepper.stop(); // Stop as fast as possible: sets new target
+  stepper.runToPosition(); 
+  stepper.moveTo(0);
+  while (stepper.currentPosition() != 0) // Full speed basck to 0
+    stepper.run();
+  stepper.stop(); // Stop as fast as possible: sets new target
+  stepper.runToPosition(); 
+}
 void loop(){
   button1.loop();
   button2.loop();
@@ -49,23 +59,7 @@ void loop(){
   if (!on){Serial.println("OFF"); sevseg.blank();}
   else{
     if (i == 1){
-      Serial.println("MODE1"); 
-      stepper.setMaxSpeed(speed);
-      stepper.setAcceleration(speed);
-
-      stepper.moveTo(distance);
-      while (stepper.currentPosition() != distance) // Full speed up to 300
-        stepper.run();
-      stepper.stop(); // Stop as fast as possible: sets new target
-      stepper.runToPosition(); 
-      // Now stopped after quickstop
-    
-      // Now go backwards
-      stepper.moveTo(0);
-      while (stepper.currentPosition() != 0) // Full speed basck to 0
-        stepper.run();
-      stepper.stop(); // Stop as fast as possible: sets new target
-      stepper.runToPosition(); 
+      
       // Now stopped after quickstop
       }
     if (i == 2){Serial.println("MODE2");}
