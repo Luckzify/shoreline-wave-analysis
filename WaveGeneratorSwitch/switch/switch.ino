@@ -1,6 +1,5 @@
-#include "SevSeg.h"
-#include "ezButton.h"
-#include "Stepper.h"
+#include <SevSeg.h>
+#include <ezButton.h>
 #include <AccelStepper.h>
 
 #define DEG_PER_STEP 1.8
@@ -30,22 +29,29 @@ void setup(){
   sevseg.blank();
   button1.setDebounceTime(50);
   button2.setDebounceTime(50);
-
   stepper.setCurrentPosition(0); 
-  speed = 100;
-  distance = 150;
+}
+void togglesensing(){
+  oldb1 = newb1, oldb2 = newb2;
+  newb1 = button1.isPressed(), newb2 = button2.isPressed();
+  b1toggled = (oldb1 == true && newb1 == false), b2toggled = (oldb2 == true && newb2 == false);
 }
 void moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(int speed,int distance){
   stepper.setMaxSpeed(speed);
   stepper.setAcceleration(speed);
-
   stepper.moveTo(distance);
-  while (stepper.currentPosition() != distance) // Full speed up to 300
+  while ((stepper.currentPosition() != distance) && (!b2toggled && !b1toggled)){ 
+    togglesensing();
+    Serial.println(!b2toggled && !b1toggled);
     stepper.run();
+  }
+  togglesensing();
   stepper.stop(); // Stop as fast as possible: sets new target
   stepper.runToPosition(); 
   stepper.moveTo(0);
-  while (stepper.currentPosition() != 0) // Full speed basck to 0
+  while ((stepper.currentPosition() != 0) && (!b2toggled && !b1toggled)) 
+    togglesensing();
+    Serial.println(!b2toggled && !b1toggled);
     stepper.run();
   stepper.stop(); // Stop as fast as possible: sets new target
   stepper.runToPosition(); 
@@ -53,21 +59,35 @@ void moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodically
 void loop(){
   button1.loop();
   button2.loop();
-  oldb1 = newb1, oldb2 = newb2;
-  newb1 = button1.isPressed(), newb2 = button2.isPressed();
-  b1toggled = (oldb1 == true && newb1 == false), b2toggled = (oldb2 == true && newb2 == false);
-  if (!on){Serial.println("OFF"); sevseg.blank();}
+  togglesensing();
+  if (!on){
+    Serial.println("OFF"); 
+    sevseg.blank();
+    stepper.stop();
+  }
   else{
     if (i == 1){
-      
-      // Now stopped after quickstop
-      }
-    if (i == 2){Serial.println("MODE2");}
-    if (i == 3){Serial.println("MODE3");}}
+      moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(100,150);
+      Serial.println("MODE1");
+      sevseg.setNumber(1);
+    }
+    if (i == 2){
+      Serial.println("MODE2");
+      sevseg.setNumber(2);
+    }
+    if (i == 3){
+      Serial.println("MODE3");
+      sevseg.setNumber(3);
+    }
+  }
   if (b2toggled){
+    Serial.println("B2Toggled");
     on = !on;
     if (on){i=1;sevseg.setNumber(i);}}
-  if (b1toggled && on){i = i%3+1;sevseg.setNumber(i);}
+  if (b1toggled && on){
+    Serial.println("B1Toggled");
+    i = i%3+1;
+  }
   sevseg.refreshDisplay();
 }
 
