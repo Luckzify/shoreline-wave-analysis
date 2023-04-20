@@ -12,7 +12,7 @@ const int steps_per_rev = 200;
 int i = 1;
 int oldb1, newb1, oldb2, newb2;
 bool on = false;
-bool b1toggled,b2toggled;
+bool b1toggled,b2toggled,notoggle;
 ezButton button1(12);
 ezButton button2(13);
 
@@ -35,26 +35,29 @@ void togglesensing(){
   oldb1 = newb1, oldb2 = newb2;
   newb1 = button1.isPressed(), newb2 = button2.isPressed();
   b1toggled = (oldb1 == true && newb1 == false), b2toggled = (oldb2 == true && newb2 == false);
+  notoggle = !b1toggled && !b2toggled;
 }
 void moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(int speed,int distance){
   stepper.setMaxSpeed(speed);
   stepper.setAcceleration(speed);
+
   stepper.moveTo(distance);
-  while ((stepper.currentPosition() != distance) && (!b2toggled && !b1toggled)){ 
-    togglesensing();
-    Serial.println(!b2toggled && !b1toggled);
+  while (stepper.currentPosition() != distance && newb2 == false){
     stepper.run();
+    Serial.println(newb2);
+    newb2 = button2.isPressed();
   }
   togglesensing();
   stepper.stop(); // Stop as fast as possible: sets new target
   stepper.runToPosition(); 
   stepper.moveTo(0);
-  while ((stepper.currentPosition() != 0) && (!b2toggled && !b1toggled)) 
-    togglesensing();
-    Serial.println(!b2toggled && !b1toggled);
+  while (stepper.currentPosition() != 0 && newb2 == false){ 
     stepper.run();
+    Serial.println(newb2);
+    newb2 = button2.isPressed();
+  }
   stepper.stop(); // Stop as fast as possible: sets new target
-  stepper.runToPosition(); 
+  stepper.runToPosition();
 }
 void loop(){
   button1.loop();
@@ -67,8 +70,8 @@ void loop(){
   }
   else{
     if (i == 1){
-      moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(100,150);
-      Serial.println("MODE1");
+      moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(500,150);
+      //Serial.println("MODE1");
       sevseg.setNumber(1);
     }
     if (i == 2){
