@@ -28,32 +28,37 @@ void setup() {
   pinMode(2,OUTPUT);
   stepper.setCurrentPosition(0);
 }
-void moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(int speed,int distance){
-  stepper.setMaxSpeed(speed);
-  stepper.setAcceleration(speed);
-
+void varpulse(int speed1, int speed2, int distance, int iterations){
   stepper.moveTo(distance);
-  while (stepper.currentPosition() != distance){
-   stepper.run();
+  for (int i = 0; i < iterations; i++){
+    stepper.setMaxSpeed(speed1);
+    stepper.setAcceleration(speed1);
+    stepper.moveTo(distance);
+    while (stepper.currentPosition() != distance){
+     stepper.run();
+    }
+    stepper.stop();
+    stepper.runToPosition();
+    stepper.setMaxSpeed(speed2);
+    stepper.setAcceleration(speed2);
+    stepper.moveTo(0);
+    while (stepper.currentPosition() != 0){ 
+      stepper.run();
+    }
+    stepper.stop();
+    stepper.runToPosition();
   }
-  stepper.stop();
-  stepper.runToPosition(); 
-  stepper.moveTo(0);
-  while (stepper.currentPosition() != 0){ 
-    stepper.run();
-  }
-  stepper.stop();
-  stepper.runToPosition();
 }
+
 void modes(){
   if (mode == 1){
-    moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(100,150);
+    varpulse(1000,1000,150,1);
   }
   if (mode == 2){
-    moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(500,150);
+    varpulse(100,1000,150,1);
   }
   if (mode == 3){
-    moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(1000,150);
+    varpulse(1000,1000,150,5);
   }
 }
 void loop() {
