@@ -30,7 +30,24 @@ void setup() {
   pinMode(0,OUTPUT);
   stepper.setCurrentPosition(0);
 }
-void togglesensing(){
+void moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(int speed,int distance){
+  stepper.setMaxSpeed(speed);
+  stepper.setAcceleration(speed);
+
+  stepper.moveTo(distance);
+  while (stepper.currentPosition() != distance){
+   stepper.run();
+  }
+  stepper.stop();
+  stepper.runToPosition(); 
+  stepper.moveTo(0);
+  while (stepper.currentPosition() != 0){ 
+    stepper.run();
+  }
+  stepper.stop();
+  stepper.runToPosition();
+}
+void loop() {
   button1.loop();
   button2.loop();
   button3.loop();
@@ -41,34 +58,6 @@ void togglesensing(){
   b2toggled = (oldb2 == true && newb2 == false);
   b3toggled = (oldb3 == true && newb3 == false);
   b4toggled = (oldb4 == true && newb4 == false);
-  interrupt = (on && b4toggled);
-  if (interrupt){
-    digitalWrite(0,LOW);
-  }
-}
-void moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(int speed,int distance){
-  while (interrupt == false){
-   stepper.setMaxSpeed(speed);
-   stepper.setAcceleration(speed);
-
-   stepper.moveTo(distance);
-   while (stepper.currentPosition() != distance && interrupt == false){
-     togglesensing();
-     stepper.run();
-   }
-   stepper.stop(); // Stop as fast as possible: sets new target
-   stepper.runToPosition(); 
-   stepper.moveTo(0);
-   while (stepper.currentPosition() != 0 && interrupt == false){ 
-     togglesensing();
-     stepper.run();
-   }
-   stepper.stop(); // Stop as fast as possible: sets new target
-   stepper.runToPosition();
-  }
-}
-void loop() {
-  togglesensing();
   if (!on){
     digitalWrite(0,LOW);
   }
@@ -104,6 +93,7 @@ void loop() {
       if (mode == 3){
         moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(1000,150);
       }
+      digitalWrite(1,LOW);
     }
   }
 }
