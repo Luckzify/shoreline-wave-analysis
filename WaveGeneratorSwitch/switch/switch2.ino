@@ -13,7 +13,7 @@ const int steps_per_rev = 200;
 
 int oldb1,newb1,oldb2,newb2,oldb3,newb3,oldb4,newb4;
 int mode;
-bool on = false;
+bool hold;
 bool b1toggled,b2toggled,b3toggled,b4toggled;
 
 void setup() {
@@ -45,6 +45,17 @@ void moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWa
   stepper.stop();
   stepper.runToPosition();
 }
+void modes(){
+  if (mode == 1){
+    moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(100,150);
+  }
+  if (mode == 2){
+    moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(500,150);
+  }
+  if (mode == 3){
+    moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(1000,150);
+  }
+}
 void loop() {
   button1.loop();
   button2.loop();
@@ -56,9 +67,7 @@ void loop() {
   b2toggled = (oldb2 == true && newb2 == false);
   b3toggled = (oldb3 == true && newb3 == false);
   b4toggled = (oldb4 == true && newb4 == false);
-  if (!on){
-    digitalWrite(2,LOW);
-  }
+  digitalWrite(2,LOW);
   if (b1toggled){
     mode = 1;
     digitalWrite(8,HIGH);
@@ -78,21 +87,14 @@ void loop() {
     digitalWrite(12,HIGH);
   }
   if (b4toggled){
-    on = !on;
     digitalWrite(2,HIGH);
-    if (on){
-      b4toggled == false;
-      if (mode == 1){
-        moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(100,150);
+    modes();
+    while (true){
+      if (button4.getStateRaw() == 1){
+        break;
       }
-      if (mode == 2){
-        moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(500,150);
-      }
-      if (mode == 3){
-        moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(1000,150);
-      }
-      digitalWrite(2,LOW);
-      on = !on;
+      modes();
     }
+    digitalWrite(2,LOW);
   }
 }
