@@ -4,7 +4,7 @@
 ezButton button1(9);
 ezButton button2(11);
 ezButton button3(13);
-ezButton button4(1);
+ezButton button4(3);
 
 #define DEG_PER_STEP 1.8
 #define STEP_PER_REVOLUTION (360 / DEG_PER_STEP)
@@ -25,10 +25,10 @@ void setup() {
   pinMode(8,OUTPUT);
   pinMode(10,OUTPUT);
   pinMode(12,OUTPUT);
-  pinMode(0,OUTPUT);
+  pinMode(2,OUTPUT);
   stepper.setCurrentPosition(0);
 }
-void moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(int speed,int distance){
+void moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(int speed,int distance){
   stepper.setMaxSpeed(speed);
   stepper.setAcceleration(speed);
 
@@ -57,7 +57,7 @@ void loop() {
   b3toggled = (oldb3 == true && newb3 == false);
   b4toggled = (oldb4 == true && newb4 == false);
   if (!on){
-    digitalWrite(0,LOW);
+    digitalWrite(2,LOW);
   }
   if (b1toggled){
     mode = 1;
@@ -79,19 +79,20 @@ void loop() {
   }
   if (b4toggled){
     on = !on;
-    digitalWrite(1,on);
+    digitalWrite(2,HIGH);
     if (on){
       b4toggled == false;
       if (mode == 1){
-        moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(100,150);
+        moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(100,150);
       }
       if (mode == 2){
-        moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(500,150);
+        moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(500,150);
       }
       if (mode == 3){
-        moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionPeriodicallyAndContinuouslySoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(1000,150);
+        moveThe17HS19_2004S1StepperMotorAxleBackAndForthInAZigZagMotionOnceSoThatWavesMayBeGeneratedFromThisMotionForTheWaveTankToFunctionHopefullyInTheWorkshop(1000,150);
       }
-      digitalWrite(1,LOW);
+      digitalWrite(2,LOW);
+      on = !on;
     }
   }
 }
