@@ -60,7 +60,7 @@ void modes(int m, int svar, int dvar){
     varpulse(speed,speed/10,dist,1);
   }
   if (m == 2){
-    varpulse(speed,speed,dist,5);
+    varpulse(speed,speed,dist,15);
   }
 }
 
