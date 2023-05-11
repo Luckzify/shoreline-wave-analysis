@@ -1,68 +1,56 @@
-#include<stdio.h>
-#include <string.h>
-
-#include <ArduinoMqttClient.h>
-#include <WiFiNINA.h>
 #include <AccelStepper.h>
 
-#include "arduino_secrets.h"
-
-// WIFI MQTT CODE /////////////////////////////////////////////
-char ssid[] = SECRET_SSID;    // your network SSID (name)
-char pass[] = SECRET_PASS;    // your network password (use for WPA, or use as key for WEP)
-
-WiFiClient wifiClient;
-MqttClient mqttClient(wifiClient);
-
-const char broker[] = "test.mosquitto.org";
-int        port     = 1883;
-const char topic[]  = "wave/motor";
-
-// STEPPER CODE /////////////////////////////////////////////
+#define DEG_PER_STEP 1.8
+#define STEP_PER_REVOLUTION (360 / DEG_PER_STEP)
 
 AccelStepper stepper(AccelStepper::FULL4WIRE, 7, 6, 5, 4);
 
-int wavetype;
+long moveToPosition = STEP_PER_REVOLUTION;
+int value;
 int speed;
 int distance;
 
 void setup() {
-  // attempt to connect to WiFi network:
-  while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
-    // failed, retry
-    delay(5000);
-  }
-  if (!mqttClient.connect(broker, port)) {
-    while (1);
-  }
-  // subscribe to a topic
-  mqttClient.subscribe(topic);
+  Serial.begin(9600);
 
-  // Wave Tank
-  stepper.setCurrentPosition(0);
+  stepper.setCurrentPosition(0); 
+
+  speed = 100;
+  distance = 150;
 }
 
 void loop() {
-  int messageSize = mqttClient.parseMessage();
-  if (messageSize) {
-    // Stream in characters one by one into string message
-    char message[100] = "";
-    while (mqttClient.available()) {
-      char ch = (char)mqttClient.read();
-      strncat(message, &ch, 1);
-    }
-    char * token = strtok(message, " ");
-    wavetype = atoi(token);
+  // Read Wave Type
+  if(Serial.available()>0){
+    value=Serial.read();
 
-    token = strtok(NULL, " ");
-    speed = atoi(token);
+    // Reset All Parameters
+    if(value == 0){
+      speed = 100;
+      distance = 150;
+    } 
 
-    token = strtok(NULL, " ");
-    distance = atoi(token);
+    // Speed Increments
+    if(value == 1){
+      speed += 50;
+    } 
+    if(value == 2){
+      speed -= 50;
+    } 
 
+    // Distance Increments
+    if(value == 3){
+      distance += 10;
+    } 
+    if(value == 4){
+      distance -= 10;
+    } 
+
+
+    // Run Wave Type
     /*MonoPulse Mode*/
     // value of 255: pulse mode
-    if(wavetype == 1){
+    if(value == 255){
       stepper.setMaxSpeed(speed);
       stepper.setAcceleration(speed);
 
@@ -81,7 +69,10 @@ void loop() {
       stepper.runToPosition(); 
       // Now stopped after quickstop
     }
-    if(wavetype == 2){
+
+    /*ConstantPulse Mode*/
+    // value of 254: Constant Pulse
+    if(value == 254){
       stepper.setMaxSpeed(speed);
       stepper.setAcceleration(speed);
 
@@ -100,9 +91,13 @@ void loop() {
         stepper.stop(); // Stop as fast as possible: sets new target
         stepper.runToPosition(); 
         // Now stopped after quickstop
-      }
+      }     
     }
-    if(wavetype == 3){
+
+    // Run Wave Type
+    /*FastSlow Pulse Mode*/
+    // value of 253: FastSlow pulse mode
+    if(value == 253){
       stepper.setMaxSpeed(speed);
       stepper.setAcceleration(speed);
 
@@ -123,5 +118,5 @@ void loop() {
       stepper.runToPosition(); 
       // Now stopped after quickstop
     }
-  }
+  } 
 }

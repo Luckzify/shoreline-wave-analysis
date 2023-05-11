@@ -19,8 +19,6 @@ int        port     = 1883;
 const char topic[]  = "wave/motor";
 
 // STEPPER CODE /////////////////////////////////////////////
-#define DEG_PER_STEP 1.8
-#define STEP_PER_REVOLUTION (360 / DEG_PER_STEP)
 
 AccelStepper stepper(AccelStepper::FULL4WIRE, 7, 6, 5, 4);
 
@@ -47,13 +45,6 @@ void setup() {
   Serial.println("You're connected to the network");
   Serial.println();
 
-  // You can provide a unique client ID, if not set the library uses Arduino-millis()
-  // Each client must have a unique client ID
-  // mqttClient.setId("clientId");
-
-  // You can provide a username and password for authentication
-  // mqttClient.setUsernamePassword("username", "password");
-
   Serial.print("Attempting to connect to the MQTT broker: ");
   Serial.println(broker);
 
@@ -74,9 +65,6 @@ void setup() {
   // subscribe to a topic
   mqttClient.subscribe(topic);
 
-  // topics can be unsubscribed using:
-  // mqttClient.unsubscribe(topic);
-
   Serial.print("Waiting for messages on topic: ");
   Serial.println(topic);
   Serial.println();
@@ -84,9 +72,6 @@ void setup() {
 
   // Wave Tank
   stepper.setCurrentPosition(0);
-  wavetype = 0;
-  speed = 0;
-  distance = 0;
 }
 
 void loop() {
@@ -156,11 +141,5 @@ void loop() {
     if(wavetype == 3){
       Serial.print("Wavetype3 Mode at speed: "); Serial.print(speed); Serial.print(" and distance: "); Serial.print(distance);
     }
-
-
-
-
-
-
   }
 }
