@@ -3,7 +3,6 @@
 
 #include <ArduinoMqttClient.h>
 #include <WiFiNINA.h>
-#include <AccelStepper.h>
 
 #include "arduino_secrets.h"
 
@@ -16,17 +15,10 @@ MqttClient mqttClient(wifiClient);
 
 const char broker[] = "test.mosquitto.org";
 int        port     = 1883;
-const char topic[]  = "wave/motor";
+const char topic[]  = "led/control";
 
-// STEPPER CODE /////////////////////////////////////////////
-#define DEG_PER_STEP 1.8
-#define STEP_PER_REVOLUTION (360 / DEG_PER_STEP)
-
-AccelStepper stepper(AccelStepper::FULL4WIRE, 7, 6, 5, 4);
-
-int wavetype;
-int speed;
-int distance;
+int led = 0;
+#define LED_PIN 8
 
 void setup() {
   //Initialize serial and wait for port to open:
@@ -82,11 +74,8 @@ void setup() {
   Serial.println();
 
 
-  // Wave Tank
-  stepper.setCurrentPosition(0);
-  wavetype = 0;
-  speed = 0;
-  distance = 0;
+  
+  pinMode(LED_PIN, OUTPUT);
 }
 
 void loop() {
@@ -106,61 +95,16 @@ void loop() {
       strncat(message, &ch, 1);
     }
     Serial.print("Message: "); Serial.print(message);
-
     Serial.println();
 
     char * token = strtok(message, " ");
-    wavetype = atoi(token);
-    Serial.print("Wavetype: "); Serial.print(wavetype);
+    led = atoi(token);
 
-    Serial.println();
-
-    token = strtok(NULL, " ");
-    speed = atoi(token);
-    Serial.print("Speed: "); Serial.print(speed);
-
-    Serial.println();
-
-    token = strtok(NULL, " ");
-    distance = atoi(token);
-    Serial.print("Distance: "); Serial.print(distance);
-
-    Serial.println();
-    Serial.println();
-
-    /*MonoPulse Mode*/
-    // value of 255: pulse mode
-    if(wavetype == 1){
-      Serial.print("MonoPulse Mode at speed: "); Serial.print(speed); Serial.print(" and distance: "); Serial.print(distance);
-      stepper.setMaxSpeed(speed);
-      stepper.setAcceleration(speed);
-
-      stepper.moveTo(distance);
-      while (stepper.currentPosition() != distance) // Full speed up to 300
-        stepper.run();
-      stepper.stop(); // Stop as fast as possible: sets new target
-      stepper.runToPosition(); 
-      // Now stopped after quickstop
-    
-      // Now go backwards
-      stepper.moveTo(0);
-      while (stepper.currentPosition() != 0) // Full speed basck to 0
-        stepper.run();
-      stepper.stop(); // Stop as fast as possible: sets new target
-      stepper.runToPosition(); 
-      // Now stopped after quickstop
+    if(led == 0){
+      digitalWrite(LED_PIN, LOW);
     }
-    if(wavetype == 2){
-      Serial.print("Wavetype2 Mode at speed: "); Serial.print(speed); Serial.print(" and distance: "); Serial.print(distance);
+    if(led == 1){
+      digitalWrite(LED_PIN, HIGH);
     }
-    if(wavetype == 3){
-      Serial.print("Wavetype3 Mode at speed: "); Serial.print(speed); Serial.print(" and distance: "); Serial.print(distance);
-    }
-
-
-
-
-
-
   }
 }

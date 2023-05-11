@@ -1,4 +1,3 @@
-
 #include<stdio.h>
 #include <string.h>
 
@@ -20,43 +19,70 @@ int        port     = 1883;
 const char topic[]  = "wave/motor";
 
 // STEPPER CODE /////////////////////////////////////////////
-#define DEG_PER_STEP 1.8
-#define STEP_PER_REVOLUTION (360 / DEG_PER_STEP)
 
 AccelStepper stepper(AccelStepper::FULL4WIRE, 7, 6, 5, 4);
 
-int wavetype = 0;
-int speed = 0;
-int distance = 0;
-
-long moveToPosition = STEP_PER_REVOLUTION;
+int wavetype;
+int speed;
+int distance;
 
 void setup() {
+  //Initialize serial and wait for port to open:
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for native USB port only
+  }
 
   // attempt to connect to WiFi network:
+  Serial.print("Attempting to connect to WPA SSID: ");
+  Serial.println(ssid);
   while (WiFi.begin(ssid, pass) != WL_CONNECTED) {
     // failed, retry
+    Serial.print(".");
     delay(5000);
   }
 
+  Serial.println("You're connected to the network");
+  Serial.println();
+
+  Serial.print("Attempting to connect to the MQTT broker: ");
+  Serial.println(broker);
+
   if (!mqttClient.connect(broker, port)) {
+    Serial.print("MQTT connection failed! Error code = ");
+    Serial.println(mqttClient.connectError());
+
     while (1);
   }
+
+  Serial.println("You're connected to the MQTT broker!");
+  Serial.println();
+
+  Serial.print("Subscribing to topic: ");
+  Serial.println(topic);
+  Serial.println();
 
   // subscribe to a topic
   mqttClient.subscribe(topic);
 
+  Serial.print("Waiting for messages on topic: ");
+  Serial.println(topic);
+  Serial.println();
+
+
   // Wave Tank
   stepper.setCurrentPosition(0);
-  wavetype = 1;
-  speed = 100;
-  distance = 50;
 }
 
 void loop() {
   int messageSize = mqttClient.parseMessage();
   if (messageSize) {
     // we received a message, print out the topic and contents
+    Serial.print("Received a message with topic '");
+    Serial.print(mqttClient.messageTopic());
+    Serial.print("', length ");
+    Serial.print(messageSize);
+    Serial.println(" bytes:");
 
     // Stream in characters one by one into string message
     char message[100] = "";
@@ -64,79 +90,56 @@ void loop() {
       char ch = (char)mqttClient.read();
       strncat(message, &ch, 1);
     }
+    Serial.print("Message: "); Serial.print(message);
+
+    Serial.println();
 
     char * token = strtok(message, " ");
     wavetype = atoi(token);
+    Serial.print("Wavetype: "); Serial.print(wavetype);
+
+    Serial.println();
 
     token = strtok(NULL, " ");
     speed = atoi(token);
+    Serial.print("Speed: "); Serial.print(speed);
+
+    Serial.println();
 
     token = strtok(NULL, " ");
     distance = atoi(token);
+    Serial.print("Distance: "); Serial.print(distance);
+
+    Serial.println();
+    Serial.println();
 
     /*MonoPulse Mode*/
     // value of 255: pulse mode
     if(wavetype == 1){
-      // const int steps_per_rev = 200;
+      Serial.print("MonoPulse Mode at speed: "); Serial.print(speed); Serial.print(" and distance: "); Serial.print(distance);
+      stepper.setMaxSpeed(speed);
+      stepper.setAcceleration(speed);
 
-      // stepper.setMaxSpeed(100);
-      // stepper.setAcceleration(20);
-      // stepper.moveTo(500);
-      // if (stepper.distanceToGo() == 0)
-      // stepper.moveTo(-stepper.currentPosition());
- 
-      // stepper.run();
-      
-
-      pinMode(13, OUTPUT);
-      digitalWrite(13, HIGH);  // turn the LED on (HIGH is the voltage level)
-      delay(1000);                      // wait for a second
-      digitalWrite(13, LOW);   // turn the LED off by making the voltage LOW
-      delay(1000);    
+      stepper.moveTo(distance);
+      while (stepper.currentPosition() != distance) // Full speed up to 300
+        stepper.run();
+      stepper.stop(); // Stop as fast as possible: sets new target
+      stepper.runToPosition(); 
+      // Now stopped after quickstop
+    
+      // Now go backwards
+      stepper.moveTo(0);
+      while (stepper.currentPosition() != 0) // Full speed basck to 0
+        stepper.run();
+      stepper.stop(); // Stop as fast as possible: sets new target
+      stepper.runToPosition(); 
+      // Now stopped after quickstop
     }
     if(wavetype == 2){
-      stepper.setMaxSpeed(speed);
-      stepper.setAcceleration(speed);
-
-      stepper.moveTo(distance);
-      while (stepper.currentPosition() != distance) // Full speed up to 300
-        stepper.run();
-      stepper.stop(); // Stop as fast as possible: sets new target
-      stepper.runToPosition(); 
-      // Now stopped after quickstop
-    
-      // Now go backwards
-      stepper.moveTo(0);
-      while (stepper.currentPosition() != 0) // Full speed basck to 0
-        stepper.run();
-      stepper.stop(); // Stop as fast as possible: sets new target
-      stepper.runToPosition(); 
-      // Now stopped after quickstop
+      Serial.print("Wavetype2 Mode at speed: "); Serial.print(speed); Serial.print(" and distance: "); Serial.print(distance);
     }
     if(wavetype == 3){
-      stepper.setMaxSpeed(speed);
-      stepper.setAcceleration(speed);
-
-      stepper.moveTo(distance);
-      while (stepper.currentPosition() != distance) // Full speed up to 300
-        stepper.run();
-      stepper.stop(); // Stop as fast as possible: sets new target
-      stepper.runToPosition(); 
-      // Now stopped after quickstop
-    
-      // Now go backwards
-      stepper.moveTo(0);
-      while (stepper.currentPosition() != 0) // Full speed basck to 0
-        stepper.run();
-      stepper.stop(); // Stop as fast as possible: sets new target
-      stepper.runToPosition(); 
-      // Now stopped after quickstop
+      Serial.print("Wavetype3 Mode at speed: "); Serial.print(speed); Serial.print(" and distance: "); Serial.print(distance);
     }
-
-
-
-
-
-
   }
 }
