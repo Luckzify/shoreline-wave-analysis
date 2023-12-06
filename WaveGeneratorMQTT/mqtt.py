@@ -34,7 +34,7 @@ with st.form("update_form"):
     wavetype = st.selectbox(
         'Wavetype:',
         ('None','MonoPulse','wavetype2', 'wavetype3'))
-    speed = st.slider('Speed:', 0, 3000, 1000)
+    speed = st.slider('Speed:', 0, 5000, 1000)
     distance = st.slider('Distance:', 0, 200, 100)
    
     submitted = st.form_submit_button("Update and run")
