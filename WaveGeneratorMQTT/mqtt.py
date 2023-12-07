@@ -34,10 +34,6 @@ with st.form("update_form"):
     wavetype = st.selectbox(
         'Wavetype:',
         ('None','MonoPulse','wavetype2', 'wavetype3'))
-
-    #uncomment sliders if you want them back, but be sure to comment out the number input as they share same variable
-    #speed = st.slider('Speed:', 0, 5000, 1000)
-    #distance = st.slider('Distance:', 0, 200, 100)
     
     speed = st.number_input('Speed:', max_value=6000)
     distance =  st.number_input('Distance:', max_value=200)
