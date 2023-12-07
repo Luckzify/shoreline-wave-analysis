@@ -39,8 +39,8 @@ with st.form("update_form"):
     #speed = st.slider('Speed:', 0, 5000, 1000)
     #distance = st.slider('Distance:', 0, 200, 100)
     
-    speed = st.number_input('Speed:', min_value=0, max_value=6000)
-    distance =  st.number_input('Distance:', min_value=0, max_value=200)
+    speed = st.number_input('Speed:', max_value=6000)
+    distance =  st.number_input('Distance:', max_value=200)
    
     submitted = st.form_submit_button("Update and run")
     if submitted:
