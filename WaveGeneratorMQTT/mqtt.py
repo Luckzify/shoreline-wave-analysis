@@ -35,8 +35,8 @@ with st.form("update_form"):
         'Wavetype:',
         ('None','MonoPulse','wavetype2', 'wavetype3'))
     
-    speed = st.slider('Speed:', 0, 5000, 1000)
-    distance = st.slider('Distance:', 0, 200, 100)
+    speed = st.number_input('Speed:', max_value=10000)
+    distance = st.number_input('Distance:', max_value=200)
    
     submitted = st.form_submit_button("Update and run")
     if submitted:
